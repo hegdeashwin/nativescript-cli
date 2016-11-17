@@ -96,7 +96,8 @@ export class NodePackageManager implements INodePackageManager {
 			try {
 				viewResult = this.$childProcess.exec(`npm view ${packageName} ${flags}`).wait();
 			} catch(e) {
-				this.$errors.failWithoutHelp(e);
+				this.$logger.out(e);
+				throw e;
 			}
 			return JSON.parse(viewResult);
 		}).future<any>()();
