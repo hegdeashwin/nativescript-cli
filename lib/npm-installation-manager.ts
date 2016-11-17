@@ -71,7 +71,7 @@ export class NpmInstallationManager implements INpmInstallationManager {
 	private installCore(packageName: string, pathToSave: string, version: string, dependencyType: string): IFuture<string> {
 		return (() => {
 			// check if the packageName is url or local file and if it is, let npm install deal with the version
-			if(this.isURL(packageName) || this.$fs.exists(packageName).wait() || packageName.indexOf(".") === 0) {
+			if(this.isURL(packageName) || this.$fs.exists(packageName).wait() || packageName.indexOf(".") === 0 || packageName.indexOf(".tgz") >= 0) {
 				version = null;
 			} else {
 				version = version || this.getLatestCompatibleVersion(packageName).wait();
