@@ -34,7 +34,6 @@ export class NodePackageManager implements INodePackageManager {
 			}
 			params = params.concat(flags);
 			try {
-				this.$childProcess.spawnFromEvent(this.getNpmExecutableName(), params, "close", { cwd: pathToSave }).wait();
 				let spawnResult:ISpawnResult = this.$childProcess.spawnFromEvent(this.getNpmExecutableName(), params, "close", { cwd: pathToSave }).wait();
 				this.$logger.out(spawnResult.stdout);
 			} catch (err) {
