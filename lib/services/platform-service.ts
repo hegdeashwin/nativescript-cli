@@ -692,10 +692,11 @@ export class PlatformService implements IPlatformService {
 
 			let newVersion = version === constants.PackageVersion.NEXT ?
 				this.$npmInstallationManager.getNextVersion(platformData.frameworkPackageName).wait() :
-				this.$npmInstallationManager.getLatestVersion(platformData.frameworkPackageName).wait();
-			let installedModuleDir = this.$npmInstallationManager.install(platformData.frameworkPackageName, this.$projectData.projectDir, {version: newVersion}).wait();
+				version || this.$npmInstallationManager.getLatestCompatibleVersion(platformData.frameworkPackageName).wait();
+			let installedModuleDir = this.$npmInstallationManager.install(platformData.frameworkPackageName, this.$projectData.projectDir, {version: newVersion, dependencyType: "save"}).wait();
 			let cachedPackageData = this.$fs.readJson(path.join(installedModuleDir, "package.json")).wait();
 			newVersion = (cachedPackageData && cachedPackageData.version) || newVersion;
+			this.$npm.uninstall(platformData.frameworkPackageName, {save: true}, this.$projectData.projectDir).wait();
 
 			let canUpdate = platformData.platformProjectService.canUpdatePlatform(installedModuleDir).wait();
 			if (canUpdate) {
@@ -723,6 +724,7 @@ export class PlatformService implements IPlatformService {
 			this.removePlatforms([packageName]).wait();
 			packageName = newVersion ? `${packageName}@${newVersion}` : packageName;
 			this.addPlatform(packageName).wait();
+			this.$logger.out("Successfully updated to version ", newVersion);
 		}).future<void>()();
 	}
 

@@ -25,7 +25,6 @@ export class NodePackageManager implements INodePackageManager {
 			}
 
 			let jsonContentBefore = this.$fs.readJson(path.join(pathToSave, "package.json")).wait();
-			// let dependenciesBefore: Array<string> = [];
 			let dependenciesBefore = _.keys(jsonContentBefore.dependencies).concat(_.keys(jsonContentBefore.devDependencies));
 
 			let flags = this.getFlagsString(config, true);
@@ -36,6 +35,8 @@ export class NodePackageManager implements INodePackageManager {
 			params = params.concat(flags);
 			try {
 				this.$childProcess.spawnFromEvent(this.getNpmExecutableName(), params, "close", { cwd: pathToSave }).wait();
+				let spawnResult:ISpawnResult = this.$childProcess.spawnFromEvent(this.getNpmExecutableName(), params, "close", { cwd: pathToSave }).wait();
+				this.$logger.out(spawnResult.stdout);
 			} catch (err) {
 				if (err.message && err.message.indexOf("EPEERINVALID") !== -1) {
 					// Not installed peer dependencies are treated by npm 2 as errors, but npm 3 treats them as warnings.
@@ -92,7 +93,12 @@ export class NodePackageManager implements INodePackageManager {
 	public view(packageName: string, config: any): IFuture<any> {
 		return (() => {
 			let flags = this.getFlagsString(config, false);
-			let viewResult = this.$childProcess.exec(`npm view ${packageName} ${flags}`).wait();
+			let viewResult: any;
+			try {
+				viewResult = this.$childProcess.exec(`npm view ${packageName} ${flags}`).wait();
+			} catch(e) {
+				this.$errors.failWithoutHelp(e);
+			}
 			return JSON.parse(viewResult);
 		}).future<any>()();
 	}
