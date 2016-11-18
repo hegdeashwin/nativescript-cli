@@ -70,12 +70,11 @@ export class NpmInstallationManager implements INpmInstallationManager {
 
 	private installCore(packageName: string, pathToSave: string, version: string, dependencyType: string): IFuture<string> {
 		return (() => {
-			if(packageName.indexOf(".") === 0 || packageName.indexOf(".tgz") >= 0) {
-				let cwd = process.cwd();
-				let possiblePackageName = path.join(`${cwd}`, packageName);
-				if(this.$fs.exists(possiblePackageName).wait()) {
-					packageName = possiblePackageName;
-				}
+			const possiblePackageName= path.resolve(packageName);
+			if(this.$fs.exists(possiblePackageName).wait()) {
+				packageName = possiblePackageName;
+			}
+			if(packageName.indexOf(".tgz") >= 0) {
 				version = null;
 			}
 			// check if the packageName is url or local file and if it is, let npm install deal with the version
