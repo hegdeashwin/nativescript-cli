@@ -114,11 +114,6 @@ export class PlatformService implements IPlatformService {
 			let coreModuleData = this.$fs.readJson(path.join(frameworkDir, "../", "package.json")).wait();
 			let installedVersion = coreModuleData.version;
 			let coreModuleName = coreModuleData.name;
-			let isFrameworkPathDirectory = false;
-
-			if (this.$options.frameworkPath) {
-				let frameworkPathStats = this.$fs.getFsStats(this.$options.frameworkPath).wait();
-			}
 
 			this.$projectDataService.initialize(this.$projectData.projectDir);
 			let customTemplateOptions = this.getPathToPlatformTemplate(this.$options.platformTemplate, platformData.frameworkPackageName).wait();

@@ -37,7 +37,7 @@ export class NodePackageManager implements INodePackageManager {
 			if(this.$options.path) {
 				params.push("--prefix");
 				params.push(pathToSave);
-				pwd = path.resolve(".")
+				pwd = path.resolve(".");
 			}
 			try {
 				let spawnResult:ISpawnResult = this.$childProcess.spawnFromEvent(this.getNpmExecutableName(), params, "close", { cwd: pwd }).wait();
