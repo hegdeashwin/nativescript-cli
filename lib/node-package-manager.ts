@@ -33,8 +33,14 @@ export class NodePackageManager implements INodePackageManager {
 				params.push(packageName); //because npm install ${pwd} on mac tries to install itself as a dependency (windows and linux have no such issues)
 			}
 			params = params.concat(flags);
+			let pwd = pathToSave;
+			if(this.$options.path) {
+				params.push("--prefix");
+				params.push(pathToSave);
+				pwd = path.resolve(".")
+			}
 			try {
-				let spawnResult:ISpawnResult = this.$childProcess.spawnFromEvent(this.getNpmExecutableName(), params, "close", { cwd: pathToSave }).wait();
+				let spawnResult:ISpawnResult = this.$childProcess.spawnFromEvent(this.getNpmExecutableName(), params, "close", { cwd: pwd }).wait();
 				this.$logger.out(spawnResult.stdout);
 			} catch (err) {
 				if (err.message && err.message.indexOf("EPEERINVALID") !== -1) {

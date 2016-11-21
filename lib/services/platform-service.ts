@@ -118,14 +118,12 @@ export class PlatformService implements IPlatformService {
 
 			if (this.$options.frameworkPath) {
 				let frameworkPathStats = this.$fs.getFsStats(this.$options.frameworkPath).wait();
-				isFrameworkPathDirectory = frameworkPathStats.isDirectory();
 			}
 
-			let sourceFrameworkDir = isFrameworkPathDirectory && this.$options.symlink ? path.join(this.$options.frameworkPath, "framework") : frameworkDir;
 			this.$projectDataService.initialize(this.$projectData.projectDir);
 			let customTemplateOptions = this.getPathToPlatformTemplate(this.$options.platformTemplate, platformData.frameworkPackageName).wait();
 			let pathToTemplate = customTemplateOptions && customTemplateOptions.pathToTemplate;
-			platformData.platformProjectService.createProject(path.resolve(sourceFrameworkDir), installedVersion, pathToTemplate).wait();
+			platformData.platformProjectService.createProject(path.resolve(frameworkDir), installedVersion, pathToTemplate).wait();
 			platformData.platformProjectService.ensureConfigurationFileInAppResources().wait();
 			platformData.platformProjectService.interpolateData().wait();
 			platformData.platformProjectService.afterCreateProject(platformData.projectRoot).wait();
